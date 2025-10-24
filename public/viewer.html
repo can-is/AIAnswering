@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ChatGPT Viewer — Live</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: "Inter", sans-serif;
+      overflow: hidden;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .header {
+      flex-shrink: 0;
+      padding: 16px;
+      border-bottom: 1px solid #30363d;
+      background: rgba(22, 27, 34, 0.9);
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+      min-height: 0;
+    }
+
+    /* Make chat bubbles occupy full width elegantly */
+    .msg.assistant .bubble {
+      background: #161b22;
+      border: 1px solid #30363d;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: block;
+      color: #e6edf3;
+      line-height: 1.6;
+      font-size: 15px;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    /* Fix code blocks to wrap instead of scroll horizontally */
+    .bubble pre, .bubble code {
+      background: #0d1117;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+      padding: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      display: block;
+      font-family: "Consolas", "Courier New", monospace;
+      color: #c9d1d9;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* On small screens, give extra breathing space */
+    @media (max-width: 768px) {
+      .bubble {
+        font-size: 14px;
+        padding: 14px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <main class="main">
+      <div class="header">
+        <div class="title" id="headerTitle">Join a Meeting</div>
+        <div class="meta" id="headerMeta"></div>
+      </div>
+
+      <div class="messages" id="messages">
+        <div style="opacity:.7">Enter Meeting ID and Password to watch responses live.</div>
+      </div>
+
+      <div class="footer">
+        <div class="inputbar" id="joinBar" style="grid-template-columns: 1fr 1fr auto;">
+          <input id="meetingId" placeholder="Meeting ID" />
+          <input id="password" placeholder="Password" />
+          <button id="joinBtn">Join</button>
+        </div>
+        <div class="badge">Viewer mode: only AI responses with formatted Markdown.</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("pre code").forEach((block) => hljs.highlightElement(block));
+  });
+</script>
+  <script type="module" src="/shared.js"></script>
+  <script type="module" src="/viewer.js"></script>
+</body>
+</html>

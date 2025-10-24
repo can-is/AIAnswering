@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChatGPT Meetings - Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    #authOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .logout-btn {
+      position: absolute;
+      right: 20px;
+      top: 14px;
+      background: #30363d;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="authOverlay">Checking authentication...</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const token = localStorage.getItem("idToken");
+      if (!token) {
+        console.warn("No token found → redirecting to login.html");
+        window.location.href = "/login.html";
+      } else {
+        document.getElementById("authOverlay").style.display = "none";
+      }
+    });
+  </script>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Meetings</span>
+        <div class="sidebar-actions">
+          <button id="createBtn">+</button>
+          <button id="refreshBtn">↻</button>
+        </div>
+      </div>
+      <div id="meetingList" class="meeting-list"></div>
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div>
+          <div id="meetingTitle" class="title">No Meeting Selected</div>
+          <div id="meetingMeta" class="meta"></div>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </header>
+
+      <div id="messages" class="messages"></div>
+
+      <footer class="footer">
+        <div class="inputbar">
+          <textarea id="prompt" placeholder="Type your message..."></textarea>
+            <button id="micBtn" style="background:#30363d;">🎙️</button>
+          <button id="sendBtn">Send</button>
+        
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle-switch">
+            <input type="checkbox" id="sendToViewer">
+            <span class="slider"></span>
+          </label>
+          <span>Send to Viewer</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <h3>Create New Meeting</h3>
+      <input id="meetingTitleInput" type="text" placeholder="Enter title" />
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="cancelModal">Cancel</button>
+        <button id="startMeeting">Start</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("userEmail");
+      window.location.href = "/login.html";
+    });
+  </script>
+
+  <script type="module" src="asker.js"></script>
+</body>
+</html>
