@@ -142,13 +142,61 @@ textarea { resize: none; border: 1px solid var(--border); background: rgba(13,17
 .timestamp { color:#8b949e; font-size:12px; margin:0 0 6px 0; }
 
 /* Mobile sidebar */
-.toggle-sidebar { display: none; }
-@media (max-width: 768px){
-  .layout { grid-template-columns: 1fr !important; }
-  .sidebar { display:none; }
-  .sidebar.active { display:block; position:fixed; left:0; top:0; bottom:0; width:80%; z-index:20; background:var(--panel); border-right:1px solid var(--border); }
-  .toggle-sidebar { display:inline-block; background:#30363d; color:#fff; border:none; padding:8px 10px; border-radius:6px; }
+/* ==== MOBILE SIDEBAR FIX ==== */
+.toggle-sidebar {
+  display: none;
 }
+
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    position: relative;
+  }
+
+  .sidebar {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 80%;
+    max-width: 300px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    z-index: 50;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.active {
+    display: block;
+    transform: translateX(0);
+  }
+
+  /* overlay background when sidebar open */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    display: none;
+  }
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  .toggle-sidebar {
+    display: inline-block;
+    background: #30363d;
+    color: #fff;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 18px;
+  }
+}
+
 /* ==== FINAL SCROLL + FLEX FIX ==== */
 
 /* Make sure main fills full viewport and scrolls internally */
@@ -201,4 +249,27 @@ textarea { resize: none; border: 1px solid var(--border); background: rgba(13,17
   padding: 8px;
   overflow-x: auto;
   font-size: 14px;
+}
+/* Prevent background scroll when sidebar is active */
+body.no-scroll {
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Make sidebar sit above everything properly */
+.sidebar {
+  z-index: 100;
+}
+
+/* Overlay sits just below the sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  z-index: 90;
+}
+
+.sidebar-overlay.active {
+  display: block;
 }

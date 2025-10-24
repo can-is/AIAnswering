@@ -3,16 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <title>ChatGPT Meetings - Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link rel="stylesheet" href="styles.css" />
   <script src="/socket.io/socket.io.js"></script>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
       height: 100%;
       width: 100%;
+      overflow: hidden;
+      font-family: "Inter", sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
     }
+
     #authOverlay {
       position: fixed;
       inset: 0;
@@ -23,30 +28,107 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      font-family: "Segoe UI", sans-serif;
     }
+
     .logout-btn {
-      position: absolute;
-      right: 20px;
-      top: 14px;
       background: #30363d;
       border: none;
       color: white;
       border-radius: 6px;
-      padding: 6px 10px;
+      padding: 6px 12px;
       cursor: pointer;
       font-size: 13px;
     }
+
+    /* Sidebar overlay */
+    .sidebar-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      z-index: 40;
+    }
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    /* Hamburger button */
+    .toggle-sidebar {
+      display: none;
+      background: #30363d;
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    /* Responsive behavior */
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr !important;
+        position: relative;
+      }
+
+      .sidebar {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 80%;
+        max-width: 300px;
+        background: #0d1117;
+        border-right: 1px solid #30363d;
+        z-index: 50;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .toggle-sidebar {
+        display: inline-block;
+      }
+    }
+    /* Overlay and body freeze */
+body.no-scroll {
+  overflow: hidden;
+  touch-action: none;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  z-index: 40;
+}
+
+.sidebar-overlay.active {
+  display: block;
+}
+
+.sidebar {
+  z-index: 50;
+  transition: transform 0.3s ease-in-out;
+}
+
   </style>
 </head>
 <body>
+  <!-- Authentication overlay -->
   <div id="authOverlay">Checking authentication...</div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("idToken");
       if (!token) {
-        console.warn("No token found → redirecting to login.html");
         window.location.href = "/login.html";
       } else {
         document.getElementById("authOverlay").style.display = "none";
@@ -54,8 +136,12 @@
     });
   </script>
 
+  <!-- Sidebar overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="layout">
-    <aside class="sidebar">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <span class="sidebar-title">Meetings</span>
         <div class="sidebar-actions">
@@ -66,13 +152,17 @@
       <div id="meetingList" class="meeting-list"></div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main">
       <header class="header">
-        <div>
-          <div id="meetingTitle" class="title">No Meeting Selected</div>
-          <div id="meetingMeta" class="meta"></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button id="menuBtn" class="toggle-sidebar">☰</button>
+          <div>
+            <div id="meetingTitle" class="title">No Meeting Selected</div>
+            <div id="meetingMeta" class="meta"></div>
+          </div>
         </div>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
       </header>
 
       <div id="messages" class="messages"></div>
@@ -80,11 +170,10 @@
       <footer class="footer">
         <div class="inputbar">
           <textarea id="prompt" placeholder="Type your message..."></textarea>
-            <button id="micBtn" style="background:#30363d;">🎙️</button>
+          <button id="micBtn" style="background:#30363d;">🎙️</button>
           <button id="sendBtn">Send</button>
-        
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
           <label class="toggle-switch">
             <input type="checkbox" id="sendToViewer">
             <span class="slider"></span>
@@ -95,6 +184,7 @@
     </main>
   </div>
 
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-card">
       <h3>Create New Meeting</h3>
@@ -106,11 +196,56 @@
     </div>
   </div>
 
+  <!-- Sidebar Toggle Script -->
   <script>
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("userEmail");
-      window.location.href = "/login.html";
+document.addEventListener("DOMContentLoaded", function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const menuBtn = document.getElementById("menuBtn");
+
+  // Log to verify it's binding properly
+  console.log("Sidebar toggle initialized");
+
+  // Ensure all elements exist
+  if (!sidebar || !overlay || !menuBtn) {
+    console.error("Sidebar elements not found in DOM");
+    return;
+  }
+
+  // When ☰ is clicked — open sidebar
+  menuBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    console.log("Menu clicked");
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+    document.body.classList.add("no-scroll");
+  });
+
+  // When overlay is clicked — close sidebar
+  overlay.addEventListener("click", function () {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    document.body.classList.remove("no-scroll");
+  });
+
+  // Optional: close sidebar when resizing to desktop
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 768) {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+      document.body.classList.remove("no-scroll");
+    }
+  });
+});
+</script>
+
+
+  <!-- Syntax Highlight -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll("pre code").forEach((block) => hljs.highlightElement(block));
     });
   </script>
 
