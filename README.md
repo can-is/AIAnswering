@@ -1,3 +1,4 @@
+
 # 🤖 ChatGPT Meetings
 
 A real-time, ChatGPT-style meeting and viewer system powered by **Node.js**, **Socket.io**, and **Markdown rendering**.  
@@ -32,20 +33,21 @@ The app allows an admin to create or join meeting rooms, send AI-powered prompts
 ---
 
 ## 📂 Folder Structure
+```
 chatgpt-meetings/
 ├── public/
-│ ├── index.html # Admin Panel
-│ ├── viewer.html # Viewer Interface
-│ ├── login.html # Simple login page
-│ ├── styles.css # Common UI styling
-│ ├── asker.js # Admin logic (sending messages)
-│ ├── viewer.js # Viewer logic (receiving messages)
-│ ├── shared.js # Shared Markdown + render utilities
-│ └── favicon.ico
-├── server.js # Express + Socket.IO backend
+│   ├── index.html      # Admin Panel
+│   ├── viewer.html     # Viewer Interface
+│   ├── login.html      # Simple login page
+│   ├── styles.css      # Common UI styling
+│   ├── asker.js        # Admin logic (sending messages)
+│   ├── viewer.js       # Viewer logic (receiving messages)
+│   ├── shared.js       # Shared Markdown + render utilities
+│   └── favicon.ico
+├── server.js           # Express + Socket.IO backend
 ├── package.json
 └── README.md
-
+```
 
 ---
 
@@ -55,78 +57,78 @@ chatgpt-meetings/
 ```bash
 git clone https://github.com/can-is/AIAnswering.git
 cd AIAnswering
+```
 
-2️⃣ Install dependencies
+### 2️⃣ Install dependencies
+```bash
 npm install
+```
 
-3️⃣ Run the server
+### 3️⃣ Run the server
+```bash
 node server.js
+```
+Server will start on **http://localhost:3000**
 
+---
 
-Server will start on http://localhost:3000
+## 💻 Usage
 
-💻 Usage
-🧑‍💼 Admin Panel (index.html)
+### 🧑‍💼 Admin Panel (`index.html`)
+- Create new meetings  
+- Send prompts via text or voice (🎙️ button)  
+- Toggle “Send to Viewer” switch to broadcast messages
 
-Create new meetings
+### 👀 Viewer Panel (`viewer.html`)
+- Join a meeting with Meeting ID + Password  
+- Watch AI responses update in real time
 
-Send prompts via text or voice (🎙️ button)
+---
 
-Toggle “Send to Viewer” switch to broadcast messages
-
-👀 Viewer Panel (viewer.html)
-
-Join a meeting with Meeting ID + Password
-
-Watch AI responses update in real time
-
-🧠 Example Conversation
-**User:** What is Azure Function vs Durable Function?
+## 🧠 Example Conversation
+**User:** What is Azure Function vs Durable Function?  
 
 **AI:**  
 - Azure Function: Stateless, short-lived tasks  
 - Durable Function: Stateful, long-running workflows  
 Ideal for scenarios needing orchestration or multi-step coordination.
 
-📱 Responsive Design
+---
 
-On mobile, sidebar collapses into a hamburger menu
+## 📱 Responsive Design
+- On mobile, sidebar collapses into a hamburger menu  
+- Messages auto-scroll and reflow for smaller screens  
+- Full-height, scrollable chat with pinned footer  
 
-Messages auto-scroll and reflow for smaller screens
+---
 
-Full-height, scrollable chat with pinned footer
+## 🔐 Authentication
+- On login, an `idToken` is stored in localStorage  
+- If absent, users are redirected to `/login.html`  
 
-🔐 Authentication
+---
 
-On login, an idToken is stored in localStorage
+## 🖤 Credits
+- [Socket.IO](https://socket.io)  
+- [Marked.js](https://marked.js.org)  
+- [Highlight.js](https://highlightjs.org/)  
+- Google SpeechRecognition API  
 
-If absent, users are redirected to /login.html
+---
 
-🖤 Credits
-
-Socket.IO
-
-Marked.js
-
-Highlight.js
-
-Google SpeechRecognition API
-
-📄 License
-
-This project is released under the MIT License.
+## 📄 License
+This project is released under the **MIT License**.  
 Feel free to fork, improve, and build your own real-time AI chat systems.
 
-🌟 Future Enhancements
+---
 
-✅ Meeting transcripts auto-save to database
+## 🌟 Future Enhancements
+✅ Meeting transcripts auto-save to database  
+✅ Multi-user chatrooms with roles  
+🚧 AI-powered meeting summaries  
+🚧 Voice response playback  
+🚧 OAuth / Firebase login  
 
-✅ Multi-user chatrooms with roles
+---
 
-🚧 AI-powered meeting summaries
-
-🚧 Voice response playback
-
-🚧 OAuth / Firebase login
-
-✨ Made with ❤️ by Creayaa Tech
+✨ Made with ❤️ by **Creayaa Tech**
